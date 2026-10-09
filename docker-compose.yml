@@ -1,0 +1,32 @@
+services:
+  gateway:
+    build: ./services/gateway
+    ports:
+      - "8000:8000"
+    environment:
+      CONTENT_URL: http://content:8000
+      TRANSLATION_URL: http://translation:8000
+      TTS_URL: http://tts:8000
+    depends_on:
+      - content
+      - translation
+      - tts
+
+  content:
+    build: ./services/content
+
+  translation:
+    build: ./services/translation
+    environment:
+      TRANSLATE_PROVIDER: ${TRANSLATE_PROVIDER:-google}   # google | mock
+
+  tts:
+    build: ./services/tts
+    environment:
+      TTS_PROVIDER: ${TTS_PROVIDER:-gtts}                 # gtts | mock
+      AUDIO_DIR: /data/audio
+    volumes:
+      - audio_data:/data/audio
+
+volumes:
+  audio_data:
